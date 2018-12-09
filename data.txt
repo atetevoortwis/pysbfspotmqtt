@@ -1,0 +1,62 @@
+SBFspot V3.5.0
+Yet another tool to read power production of SMA solar inverters
+(c) 2012-2018, SBF (https://github.com/SBFspot/SBFspot)
+Compiled for Linux (LE) 64 bit with SQLite support
+Commandline Args: -v -nocsv -nosql
+Reading config '/usr/local/bin/sbfspot.3/SBFspot.cfg'
+Sun Dec  9 15:20:20 2018: INFO: Starting...
+sunrise: 07:33
+sunset : 15:36
+Connecting to Local Network...
+Initializing...
+SUSyID: 125 - SessionID: 977349735 (0x3A412C67)
+Inverter IP address: 192.168.1.13 from SBFspot.cfg
+Logon OK
+SUSyID: 342 - SN: 1992070231
+Device Name:      SB3.6-1AV-40 231
+Device Class:     Solar Inverters
+Device Type:      Sunny Boy 3.6
+Software Version: 01.03.04.R
+Serial number:    1992070231
+SUSyID: 342 - SN: 1992070231
+Device Status:      Ok
+SUSyID: 342 - SN: 1992070231
+Device Temperature: 0.0°C
+SUSyID: 342 - SN: 1992070231
+GridRelay Status:      Closed
+SUSyID: 342 - SN: 1992070231
+Pac max phase 1: 3680W
+Pac max phase 2: 0W
+Pac max phase 3: 0W
+SUSyID: 342 - SN: 1992070231
+Energy Production:
+        EToday: 2.002kWh
+        ETotal: 2.252kWh
+        Operation Time: 9.72h
+        Feed-In Time  : 9.48h
+SUSyID: 342 - SN: 1992070231
+DC Spot Data:
+        String 1 Pdc:   0.040kW - Udc: 229.60V - Idc:  0.170A
+        String 2 Pdc:   0.014kW - Udc: 208.70V - Idc:  0.060A
+SUSyID: 342 - SN: 1992070231
+AC Spot Data:
+        Phase 1 Pac :   0.076kW - Uac: 233.22V - Iac:  0.330A
+        Phase 2 Pac :   0.000kW - Uac:   0.00V - Iac:  0.000A
+        Phase 3 Pac :   0.000kW - Uac:   0.00V - Iac:  0.000A
+        Total Pac   :   0.010kW
+SUSyID: 342 - SN: 1992070231
+Grid Freq. : 49.97Hz
+SUSyID: 342 - SN: 1992070231
+Current Inverter Time: 09/12/2018 15:20:19
+Inverter Wake-Up Time: 09/12/2018 14:43:13
+Inverter Sleep Time  : 09/12/2018 15:20:19
+********************
+* ArchiveDayData() *
+********************
+startTime = 5C0C5B00 -> 09/12/2018 00:00:00
+**********************
+* ArchiveMonthData() *
+**********************
+startTime = 5C0277C0 -> 01/12/2018 12:00:00
+Reading events: 2018-Dec-01
+Sun Dec  9 15:20:21 2018: INFO: Done.
