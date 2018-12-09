@@ -1,11 +1,10 @@
-with open('data.txt') as f:
-    data = f.readlines()
-mqtt = {'server': 'hass.local','port':1883}
-data = ''.join(data)
 
+import subprocess
+import os
 import paho.mqtt.publish as pub
 import re
-
+sbfPath = ' /usr/local/bin/sbfspot.3/SBFspot'
+sbfArgs = ['-v', '-nocsv' ,'-nosql','-finq']
 patterns = {
     'EToday': r'EToday: (.*)kWh',
     'ETotal': r'ETotal: (.*)kWh',
@@ -18,6 +17,19 @@ patterns = {
     'Phase1AC': {'pattern': r'Phase 1 Pac :  (.*)kW - Uac: (.*)V - Iac:  (.*)A',
                 'tags': ['Power','Voltage','Current']},
 }
+if os.path.isfile(sbfPath):
+
+    out = subprocess.Popen([sbfPath]+sbfArgs,
+                           stdout=subprocess.PIPE,
+                           stderr=subprocess.STDOUT)
+    stdout, stderr = out.communicate()
+    data=stdout
+else:
+    with open('data.txt') as f:
+        data = f.readlines()
+    mqtt = {'server': 'hass.local', 'port': 1883}
+    data = ''.join(data)
+
 for tag, pat in patterns.items():
     if type(pat) is dict:
         r =re.search(pat['pattern'],data)
