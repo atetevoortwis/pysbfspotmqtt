@@ -3,7 +3,8 @@ import subprocess
 import os
 import paho.mqtt.publish as pub
 import re
-sbfPath = ' /usr/local/bin/sbfspot.3/SBFspot'
+mqtt = {'server': 'hass.local', 'port': 1883}
+sbfPath = '/usr/local/bin/sbfspot.3/SBFspot'
 sbfArgs = ['-v', '-nocsv' ,'-nosql','-finq']
 patterns = {
     'EToday': r'EToday: (.*)kWh',
@@ -18,12 +19,13 @@ patterns = {
                 'tags': ['Power','Voltage','Current']},
 }
 if os.path.isfile(sbfPath):
-
+    print('Running SBFSPOT')
     out = subprocess.Popen([sbfPath]+sbfArgs,
                            stdout=subprocess.PIPE,
                            stderr=subprocess.STDOUT)
     stdout, stderr = out.communicate()
-    data=stdout
+
+    data=stdout.decode('utf8')
 else:
     with open('data.txt') as f:
         data = f.readlines()
