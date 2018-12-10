@@ -33,7 +33,7 @@ while True:
     try:
         log.info("Running, sending to: %s:%s" % (mqtt['server'],mqtt['port']))
         if os.path.isfile(sbfPath):
-            log('Running SBFSPOT')
+            log.info('Running SBFSPOT')
             out = subprocess.Popen([sbfPath]+sbfArgs,
                                    stdout=subprocess.PIPE,
                                    stderr=subprocess.STDOUT)
