@@ -8,7 +8,13 @@ import time
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 try:
-    handler = logging.handlers.SysLogHandler(address = '/dev/log')
+    handler = logging.handlers.RotatingFileHandler('./sma.log', mode='a', maxBytes=5*1024*1024,
+                                 backupCount=2, encoding=None, delay=0)
+    # create formatter
+    formatter = logging.Formatter("%(asctime)s;%(levelname)s;%(message)s")
+
+    # add formatter to ch
+    handler.setFormatter(formatter)
     log.addHandler(handler)
 except Exception as e:
     log.exception(e)
@@ -33,7 +39,7 @@ while True:
     try:
         log.info("Running, sending to: %s:%s" % (mqtt['server'],mqtt['port']))
         if os.path.isfile(sbfPath):
-            log.info('Running SBFSPOT')
+            log.infoscre('Running SBFSPOT')
             out = subprocess.Popen([sbfPath]+sbfArgs,
                                    stdout=subprocess.PIPE,
                                    stderr=subprocess.STDOUT)
