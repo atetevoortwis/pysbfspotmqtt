@@ -2,7 +2,7 @@ import requests
 import logging
 import config
 import time
-
+logger = logging.getLogger(__name__)
 def doPVOutputRequest(data):
     logging.debug(data)
 
@@ -29,7 +29,7 @@ def doPVOutputRequest(data):
                 time.sleep(reset + 1)
             else:
                 r.raise_for_status()
-                logging.info('Uploaded to PVOutput')
+                logger.info('Uploaded to PVOutput')
                 break
 
         except requests.exceptions.RequestException as arg:
