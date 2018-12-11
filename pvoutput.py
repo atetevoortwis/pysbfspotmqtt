@@ -29,8 +29,9 @@ def doPVOutputRequest(data):
                 time.sleep(reset + 1)
             else:
                 r.raise_for_status()
+                logging.info('Uploaded to PVOutput')
                 break
-            logging.info('Uploaded to PVOutput')
+
         except requests.exceptions.RequestException as arg:
             logging.warning(arg)
             time.sleep(i ** 3)
