@@ -81,7 +81,9 @@ while True:
                 'v1': round(dataActual['EToday'] * 1000.),
                 'v2': round(dataActual['Phase1ACPower'] * 1000.)
             }
-            pvoutput.doPVOutputRequest(data)
+            if dataActual['EToday']>0. and dataActual['Phase1ACPower']>0.:
+                #only send if no false zeros TODO: Fix this, how to check?
+                pvoutput.doPVOutputRequest(data)
     except Exception as e:
         log.exception(e)
     time.sleep(interval)
