@@ -26,7 +26,7 @@ def doPVOutputRequest(data):
                         reset))
             if r.status_code == 403:
                 logging.warning("Forbidden: " + r.reason)
-                time.sleep(reset + 1)
+                #time.sleep(reset + 1)
             else:
                 r.raise_for_status()
                 logger.info('Uploaded to PVOutput')

@@ -1,7 +1,7 @@
 # MQTT
 MQTT = {'server': 'mqtt.local', 'port': 1883}
-SBF_PATH = '/usr/local/bin/sbfspot.3/SBFspot'
-SBF_ARGS = ['-v', '-nocsv' ,'-nosql','-finq']
+MODBUS_URL = 'sma.local'
+MODBUS_UNIT_ID = 3
 
 
 PVOUTPUT_APIKEY = ''
