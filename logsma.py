@@ -1,5 +1,4 @@
-import subprocess
-import os
+import smamodbus
 import paho.mqtt.publish as pub
 import re
 import logging, logging.handlers
@@ -22,55 +21,20 @@ except Exception as e:
 
 interval=10
 mqtt = config.MQTT
-sbfPath = config.SBF_PATH
-sbfArgs = config.SBF_ARGS
-patterns = {
-    'EToday': r'EToday: (.*)kWh',
-    'ETotal': r'ETotal: (.*)kWh',
-    'OperationTime': r'Operation Time: (.*)h',
-    'FeedInTime': r'Feed-In Time  : (.*)h',
-    'String1DC': {'pattern': r'String 1 Pdc:   (.*)kW - Udc: (.*)V - Idc:  (.*)A',
-                'tags': ['Power','Voltage','Current']},
-    'String2DC': {'pattern': r'String 2 Pdc:   (.*)kW - Udc: (.*)V - Idc:  (.*)A',
-                'tags': ['Power','Voltage','Current']},
-    'Phase1AC': {'pattern': r'Phase 1 Pac :  (.*)kW - Uac: (.*)V - Iac:  (.*)A',
-                'tags': ['Power','Voltage','Current']},
-}
+
+sma = smamodbus.SMAModbus(config.MODBUS_URL,config.MODBUS_UNIT_ID)
+
 #last PVOUTPUT:
 lastPVOutput = None
 while True:
     try:
         log.info("Running, sending to: %s:%s" % (mqtt['server'],mqtt['port']))
-        if os.path.isfile(sbfPath):
-            log.info('Running SBFSPOT')
-            out = subprocess.Popen([sbfPath]+sbfArgs,
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.STDOUT)
-            stdout, stderr = out.communicate()
 
-            data=stdout.decode('utf8')
-        else:
-            log.info('Running with test data')
-            with open('data.txt') as f:
-                data = f.readlines()
-            mqtt = {'server': 'hass.local', 'port': 1883}
-            data = ''.join(data)
-
-        dataActual = {}
-        for tag, pat in patterns.items():
-            if type(pat) is dict:
-                r =re.search(pat['pattern'],data)
-                tags = pat['tags']
-            else:
-                r = re.search(pat, data)
-                tags = [tag]
-                tag=''
-
-
-            for v,t in zip(r.groups(),tags):
-                log.info("Sending: %s: %s" % (tag+t,float(v)))
-                pub.single('sma/%s/value' % (tag+t), float(v),keepalive=60,hostname= mqtt['server'], port=mqtt['port'])
-                dataActual[tag+t] = float(v)
+        dataActual = sma.readModbus()
+        for tag,v in dataActual.items():
+            log.info("Sending: %s: %s" % (tag,float(v)))
+            #pub.single('sma/%s/value' % (tag+t), float(v),keepalive=60,hostname= mqtt['server'], port=mqtt['port'])
+            dataActual[tag] = float(v)
 
         if lastPVOutput is None or time.time() - lastPVOutput > config.PVOUTPUT_INTERVAL:
             ts = time.localtime()
@@ -83,7 +47,8 @@ while True:
             }
             if dataActual['ETotal']>0.:
                 #only send if no false zeros TODO: Fix this, how to check?
-                pvoutput.doPVOutputRequest(data)
+                #pvoutput.doPVOutputRequest(data)
+                pass
     except Exception as e:
         log.exception(e)
     time.sleep(interval)
