@@ -33,7 +33,7 @@ while True:
         dataActual = sma.readModbus()
         for tag,v in dataActual.items():
             log.info("Sending: %s: %s" % (tag,float(v)))
-            pub.single('sma/%s/value' % (tag+t), float(v),keepalive=60,hostname= mqtt['server'], port=mqtt['port'])
+            pub.single('sma/%s/value' % tag, float(v),keepalive=60,hostname= mqtt['server'], port=mqtt['port'])
             dataActual[tag] = float(v)
 
         if lastPVOutput is None or time.time() - lastPVOutput > config.PVOUTPUT_INTERVAL:
