@@ -1,8 +1,9 @@
 from pymodbus.client.sync import ModbusTcpClient
 import logging
+import struct
 modbus_fields = {
     'EToday': {'address': 30535, 'datatype': 'U32', 'scale': 1000, 'unit': 'kWh'},
-    'ETotal': {'address': 30529, 'datatype': 'U32', 'scale': 1, 'unit': 'kWh'},
+    'ETotal': {'address': 30529, 'datatype': 'U32', 'scale': 1000, 'unit': 'kWh'},
     'String1DCPower': {'address': 30773, 'datatype': 'S32', 'scale': 1, 'unit': 'kWh'},
     'String1DCVoltage': {'address': 30771, 'datatype': 'S32', 'scale': 100, 'unit': 'V'},
     'String1DCCurrent': {'address': 30769, 'datatype': 'S32', 'scale': 1000, 'unit': 'A'},
@@ -32,5 +33,18 @@ class SMAModbus:
         data = {}
         for tag,cfg in modbus_fields.items():
             result = self._client.read_holding_registers(cfg['address'], 2, unit=self._unit_id)
-            data[tag] = result.registers[0]*2**16+result.registers[1]/cfg['scale']
+            w1 = struct.pack('H', result.registers[0]) # Assuming register values are unsigned short's
+            w2 = struct.pack('H', result.registers[1]) # Assuming register values are unsigned short's
+            if cfg['datatype'] == 'S32':
+                v = struct.unpack('i', w2 + w1)
+            elif cfg['datatype'] == 'U32':
+                v = struct.unpack('I', w2 + w1)
+            else:
+                raise NotImplementedError('Datatype {} is not implemented'.format(cfg['datatype']))
+            v = v[0]/cfg['scale']
+            v =  (result.registers[0]*2**16+result.registers[1])/cfg['scale']
+            # check for negative or larger than 100y of output
+            if v<0 or v>100*3000*1000:
+                v=0.
+            data[tag] = v
         return data

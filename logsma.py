@@ -45,6 +45,7 @@ while True:
                 'v1': round(dataActual['EToday'] * 1000.),
                 'v2': round(dataActual['Phase1ACPower'] * 1000.)
             }
+            print(data)
             if dataActual['ETotal']>0.:
                 #only send if no false zeros TODO: Fix this, how to check?
                 #pvoutput.doPVOutputRequest(data)
