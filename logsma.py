@@ -43,7 +43,7 @@ while True:
                 'd': "{:04}{:02}{:02}".format(ts.tm_year, ts.tm_mon, ts.tm_mday),
                 't': "{:02}:{:02}".format(ts.tm_hour, ts.tm_min),
                 'v1': round(dataActual['EToday'] * 1000.),
-                'v2': round(dataActual['Phase1ACPower'] * 1000.)
+                'v2': round(dataActual['Phase1ACPower'])
             }
             print(data)
             if dataActual['ETotal']>0.:
