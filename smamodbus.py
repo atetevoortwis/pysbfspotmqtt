@@ -2,20 +2,20 @@ from pymodbus.client.sync import ModbusTcpClient
 import logging
 import struct
 modbus_fields = {
-    'EToday': {'address': 30535, 'datatype': 'U32', 'scale': 1000, 'unit': 'kWh'},
-    'ETotal': {'address': 30529, 'datatype': 'U32', 'scale': 1000, 'unit': 'kWh'},
-    'String1DCPower': {'address': 30773, 'datatype': 'S32', 'scale': 1, 'unit': 'kWh'},
-    'String1DCVoltage': {'address': 30771, 'datatype': 'S32', 'scale': 100, 'unit': 'V'},
-    'String1DCCurrent': {'address': 30769, 'datatype': 'S32', 'scale': 1000, 'unit': 'A'},
-    'String2DCPower': {'address': 30961, 'datatype': 'S32', 'scale': 1, 'unit': 'kW'},
-    'String2DCVoltage': {'address': 30959, 'datatype': 'S32', 'scale': 100, 'unit': 'V'},
-    'String2DCCurrent': {'address': 30957, 'datatype': 'S32', 'scale': 1000, 'unit': 'A'},
-    'Phase1ACPower': {'address': 30775, 'datatype': 'U32', 'scale': 1, 'unit': 'kW'},
-    'Phase1ACVoltage': {'address': 30783, 'datatype': 'U32', 'scale': 100, 'unit': 'V'},
-    'Phase1ACCurrent': {'address': 30977, 'datatype': 'S32', 'scale': 1000, 'unit': 'A'},
-    'InternalTemp1': {'address': 30953, 'datatype': 'S32', 'scale': 10, 'unit': 'C'},
-    'InternalTemp2': {'address': 34113, 'datatype': 'S32', 'scale': 10, 'unit': 'C'},
-    'TempHeatsink': {'address': 34109, 'datatype': 'S32', 'scale': 10, 'unit': 'C'},
+    'EToday': {'address': 30535, 'datatype': 'U32', 'scale': 1000, 'unit': 'kWh','min': 0,'max': 100.},
+    'ETotal': {'address': 30529, 'datatype': 'U32', 'scale': 1000, 'unit': 'kWh','min': 0,'max': 4000.*100},
+    'String1DCPower': {'address': 30773, 'datatype': 'S32', 'scale': 1, 'unit': 'kWh','min': 0,'max': 4e3},
+    'String1DCVoltage': {'address': 30771, 'datatype': 'S32', 'scale': 100, 'unit': 'V','min': 0,'max': 1e3},
+    'String1DCCurrent': {'address': 30769, 'datatype': 'S32', 'scale': 1000, 'unit': 'A','min': 0,'max': 100.},
+    'String2DCPower': {'address': 30961, 'datatype': 'S32', 'scale': 1, 'unit': 'kW','min': 0,'max': 4e3},
+    'String2DCVoltage': {'address': 30959, 'datatype': 'S32', 'scale': 100, 'unit': 'V','min': 0,'max': 1e3},
+    'String2DCCurrent': {'address': 30957, 'datatype': 'S32', 'scale': 1000, 'unit': 'A','min': 0,'max': 100.},
+    'Phase1ACPower': {'address': 30775, 'datatype': 'U32', 'scale': 1, 'unit': 'kW','min': 0,'max': 1e4},
+    'Phase1ACVoltage': {'address': 30783, 'datatype': 'U32', 'scale': 100, 'unit': 'V','min': 0,'max': 500.},
+    'Phase1ACCurrent': {'address': 30977, 'datatype': 'S32', 'scale': 1000, 'unit': 'A','min': 0,'max': 100.},
+    'InternalTemp1': {'address': 30953, 'datatype': 'S32', 'scale': 10, 'unit': 'C','min': 0,'max': 200.},
+    'InternalTemp2': {'address': 34113, 'datatype': 'S32', 'scale': 10, 'unit': 'C','min': 0,'max': 200.},
+    'TempHeatsink': {'address': 34109, 'datatype': 'S32', 'scale': 10, 'unit': 'C','min': 0,'max': 200.},
 }
 
 class SMAModbus:
@@ -42,6 +42,11 @@ class SMAModbus:
             else:
                 raise NotImplementedError('Datatype {} is not implemented'.format(cfg['datatype']))
             v = v[0]/cfg['scale']
+            if v<cfg['min'] or v>cfg['max']:
+                logging.error('Value out of range for {}: {} < {} < {} [{}]'.format(tag,cfg['min'],v,cfg['max'],cfg['unit']))
+                logging.error('Raw data: {}.{}'.format(result.registers[0],result.registers[1]))
+                #skip output
+                continue
             v =  (result.registers[0]*2**16+result.registers[1])/cfg['scale']
             # check for negative or larger than 100y of output
             if v<0 or v>100*3000*1000:
