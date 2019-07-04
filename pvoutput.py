@@ -4,7 +4,7 @@ import config
 import time
 logger = logging.getLogger(__name__)
 def doPVOutputRequest(data):
-    logging.debug(data)
+    logger.debug(data)
 
     headers = {
         'X-Pvoutput-Apikey': config.PVOUTPUT_APIKEY,
@@ -21,11 +21,12 @@ def doPVOutputRequest(data):
                 reset = 0
             if 'X-Rate-Limit-Remaining' in r.headers:
                 if int(r.headers['X-Rate-Limit-Remaining']) < 10:
-                    logging.warning("Only {} requests left, reset after {} seconds".format(
+                    logger.warning("Only {} requests left, reset after {} seconds".format(
                         r.headers['X-Rate-Limit-Remaining'],
                         reset))
             if r.status_code == 403:
-                logging.warning("Forbidden: " + r.reason)
+                logger.warning("Forbidden: " + r.reason)
+                logger.info("Sleeping for {}s".format(reset+1))
                 time.sleep(reset + 1)
             else:
                 r.raise_for_status()
@@ -33,10 +34,11 @@ def doPVOutputRequest(data):
                 break
 
         except requests.exceptions.RequestException as arg:
-            logging.warning(arg)
+            logger.warning(arg)
+            logger.info("Sleeping for {}s".format(i**3))
             time.sleep(i ** 3)
     else:
-        logging.error("Failed to call PVOutput API")
+        logger.error("Failed to call PVOutput API")
 if __name__ == '__main__':
     t = time.localtime()
     data = {
