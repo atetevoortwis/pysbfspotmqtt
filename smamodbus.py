@@ -33,6 +33,9 @@ class SMAModbus:
         data = {}
         for tag,cfg in modbus_fields.items():
             result = self._client.read_holding_registers(cfg['address'], 2, unit=self._unit_id)
+            if result.isError():
+                logging.error('Reading registers for {} gave an error'.format(tag))
+                continue
             w1 = struct.pack('H', result.registers[0]) # Assuming register values are unsigned short's
             w2 = struct.pack('H', result.registers[1]) # Assuming register values are unsigned short's
             if cfg['datatype'] == 'S32':
