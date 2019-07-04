@@ -26,7 +26,7 @@ def doPVOutputRequest(data):
                         reset))
             if r.status_code == 403:
                 logging.warning("Forbidden: " + r.reason)
-                #time.sleep(reset + 1)
+                time.sleep(reset + 1)
             else:
                 r.raise_for_status()
                 logger.info('Uploaded to PVOutput')
@@ -34,7 +34,7 @@ def doPVOutputRequest(data):
 
         except requests.exceptions.RequestException as arg:
             logging.warning(arg)
-            #time.sleep(i ** 3)
+            time.sleep(i ** 3)
     else:
         logging.error("Failed to call PVOutput API")
 if __name__ == '__main__':
